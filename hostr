@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+// Using the vultr API, gets your vultr VM's ip address based on the vultr name you assigned
+
+var nconf = require('nconf');
+var https = require('https');
+var fs = require('fs');
+var path = require('path');
+
+nconf.file('./config.json');
+
+function bork(err) {
+    throw new Error(err);
+}
+
+function log(message) {
+    fs.writeFile(path.join(__dirname,'log.txt'));
+}
+
+
+var apiKey = nconf.get('VULTR_API_KEYy') || bork('could not read APIKEY from config.json');
+var apiEndpoint='https://api.vultr.com';
+var apiFunction='/v1/server/list';
+var hostname = process.argv[2];
+if (!hostname) bork('plz specify a vultr machine name as command line argument')
+
+
+
+https.get(apiEndpoint+apiFunction+'?api_key='+apiKey, function(res) {
+
+    switch(res.statusCode) {
+    case 200:
+        res.on('data', function(res) {
+            res = JSON.parse(res);
+            for (var key in res) {
+               var obj = res[key];
+                if (obj.label == hostname) {
+                    return process.stdout.write(obj.main_ip);
+                }
+            }
+            console.log('no vultr machine has the label ' + hostname);
+        }).on('error', function(e) {
+            log(e);
+        });
+        break;
+        
+    case 400:
+        log('Invalid API location. Check the URL that you are using. (contact developer)');
+        break;
+        
+    case 403:
+        log('Invalid or missing API key. Check that your API key is present and matches your assigned key');
+        break;
+        
+    case 405:
+        log('Invalid HTTP method. Check that the method (POST|GET) matches what the documentation indicates');
+        break;
+        
+    case 412:
+        log('Request failed. Check the response body for a more detailed description');
+        break;
+        
+    case 500:
+        log('Internal server error. Try again at a later time');
+        break;
+        
+    case 503:
+        log('Rate limit hit. API requests are limited to an average of 1/s. Try your request again later.');
+        break;
+    }
+    
+    
+
+     
+
+});
+
