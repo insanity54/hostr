@@ -74,16 +74,17 @@ hostr saves a log file to [repo root]/log.txt. To save disk space, this file onl
 
 ## Contributing
 
-I don't know if this project is helpful to anyone other than myself, but if it is, cool! Feel free to open issues, submit pull requests or just fork and make your own super cool version.
+I don't know if this project is helpful to anyone other than myself, but if it is, cool! Feel free to open issues, suggest features, submit pull requests or just fork and make your own super cool version.
 
 
 ## Author
 
-I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. I'm looking for a job where I can tinker and do cool projects. If you like this project and feel like supporting me, here's my deets:
+I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. If you like this project and feel like supporting me, here's my deets:
 
 http://grimtech.net/ ::: http://twitter.com/insanity54 ::: http://youtube.com/user/insanity54
 
 I'm sticker bombing my van. Send me a sticker to put on my van, then I’ll send you a different sticker!
+
 Chris Grimmett
 PO Box 1517
 Spokane Valley, Washington 99037
@@ -95,7 +96,7 @@ Changetip
 http://insanity54.tip.me/
 
 Bitcoin
-bitcoin:1JSG6YdLGVq6nY6Q3vpVxVxZ3aAE7oJK1U
+[1JSG6YdLGVq6nY6Q3vpVxVxZ3aAE7oJK1U](bitcoin:1JSG6YdLGVq6nY6Q3vpVxVxZ3aAE7oJK1U)
 
 
 Stuff I use that you might enjoy:
