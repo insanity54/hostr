@@ -1,7 +1,7 @@
 # hostr
 Dynamic hostname interpolation and supplement to /etc/hosts
 
-You have a bunch of machines in the cloud. They come and go so often (livestock, not pets) so you don't bother putting their IPs in /etc/hosts. If only there was a way for your machine to automatically know their user-readable hostname, and connect to them quickly without needing the IP address. Oh no way, this project does just that? Killer sick, dude.
+You have a bunch of machines in the cloud. They come and go so often (livestock, not pets) so you don't bother putting their IPs in /etc/hosts. If only there was a way for your dev machine to automatically know the address to your VMs in the cloud, and connect to them quickly without you needing the IP address. Oh no way, this project does just that? Killer sick, dude.
 
 ## Example usage
 
