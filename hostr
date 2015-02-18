@@ -6,6 +6,9 @@ var https = require('https');
 var fs = require('fs');
 var path = require('path');
 
+
+
+
 nconf.file('./config.json');
 
 function bork(err) {
@@ -13,63 +16,176 @@ function bork(err) {
 }
 
 function log(message) {
-    fs.writeFile(path.join(__dirname,'log.txt'));
+    fs.appendFileSync(path.join(__dirname, 'log.txt'), '\n'+message);
+}
+
+function printAddress(ip) {
+    return process.stdout.write(ip);
+}
+
+// vultr api
+var vultrApiKey = nconf.get('VULTR_API_KEY');
+var vultrApiEndpoint = 'https://api.vultr.com';
+var vultrApiFunction = '/v1/server/list';
+
+// digitalocean api
+var doClientId = nconf.get('DO_CLIENT_ID');
+var doApiKey = nconf.get('DO_API_KEY');
+var doApiEndpoint = 'https://api.digitalocean.com';
+var doApiFunction = '/v1/droplets/';
+
+// from the command line argument, get hostname the user wants address to
+var hostname = process.argv[2];
+if (!hostname) bork('You did not specify a machine name as command line argument');
+
+// determine which cloud to get info from. If user didn't prefix with a cloud name, try them all.
+var vultrRegex = /^vultr_(.*)/;
+var doRegex = /^do_(.*)/;
+
+// does user want a vultr machine addres?
+var vultrResult = vultrRegex.exec(hostname);
+if (vultrResult) {
+    // get rid of the prefix
+    hostname = vultrResult[1];
+    // bork if vultr not configured
+    if (!vultrApiKey) bork('you specified a vultr machine but there is no VULTR_API_KEY configured in config.json');
+    // check vultr for machine name
+    getVultr(function(err, ip) {
+        // bork if there was no vultr machine with this name, or any other error
+        if (err) return bork(err.message);
+        // print the address if the matching machine was found on vultr
+        return printAddress(ip);
+    });
+}
+
+// does the user want a digitalocean machine address?
+var doResult = doRegex.exec(hostname);
+if (doResult) {
+    // get rid of the prefix
+    hostname = doResult[1];
+    // bork if digitalocean not configured
+    if (!doClientId) bork('you specified a digitalocean machine but there is no DO_CLIENT_ID configured in config.json');
+    if (!doApiKey) bork('you specified a digitalocean machine but there is no DO_API_KEY configured in config.json');
+    // check digitalocean for machine name
+    getDo(function(err, ip) {
+        // bork if there was no digitalocean machine with this name, or any other error
+        if (err) return bork(err.message);
+        // print the address if the matching machine was found on do
+        return printAddress(ip);
+    });
+}
+
+// hostname is not prefixed. Try every cloud that the user has configured in config.json
+// is vultr configured?
+if (vultrApiKey) getVultr(function(err, ip) {
+    // log any vultr error but don't bork
+    if (err) log(err.message);
+    // print ip if found matching machine
+    if (ip) return printAddress(ip);
+});
+
+// is digitalocean configured?
+if (doClientId && doApiKey) getDo(function(err, ip) {
+    // log any digitalocean error but don't bork
+    if (err) log(err.message);
+    // print ip if found matching machine
+    if (ip) return printAddress(ip);
+});
+
+
+
+// get hostname
+// if hostname is prefixed
+//     bork if !configured
+//     do the prefix
+//     if match
+//         return
+//     no match
+//         bork
+//
+// hostname not prefixed
+//     get list of user configured clouds
+//     for each in list
+//         check cloud
+//             if match
+//                 return
+//             no match
+//                 bork
+//     
+
+
+function getDo(cb) {
+    //GET https://api.digitalocean.com/v1/droplets/?client_id=[client_id]&api_key=[api_key]
+    https.get(doApiEndpoint+doApiFunction+'?client_id='+doClientId+'&api_key='+doApiKey, function(res) {
+        switch(res.statusCode) {
+            case 200: 
+                res.on('data', function(res) {
+                res = JSON.parse(res);
+                for (var key in res.droplets) {
+                    var droplet = res.droplets[key];
+                    if (droplet.name == hostname) {
+                        return cb(null, droplet.ip_address);
+                    }
+                }
+                return cb({message: 'no digitalocean machine has the label, ' + hostname}, null);
+                }).on('error', function(e) {
+                    return cb({message: e}, null);
+                });
+            break;
+            
+            case 404:
+                return cb({message: 'digitalocean 404 (not found)'}, null);
+
+            case 401:
+                return cb({message: 'digitalocean 401 (Access denied)'}, null);
+        }
+    });
+
 }
 
 
-var apiKey = nconf.get('VULTR_API_KEYy') || bork('could not read APIKEY from config.json');
-var apiEndpoint='https://api.vultr.com';
-var apiFunction='/v1/server/list';
-var hostname = process.argv[2];
-if (!hostname) bork('plz specify a vultr machine name as command line argument')
 
-
-
-https.get(apiEndpoint+apiFunction+'?api_key='+apiKey, function(res) {
-
-    switch(res.statusCode) {
-    case 200:
-        res.on('data', function(res) {
-            res = JSON.parse(res);
-            for (var key in res) {
-               var obj = res[key];
-                if (obj.label == hostname) {
-                    return process.stdout.write(obj.main_ip);
+function getVultr(cb) {
+    https.get(vultrApiEndpoint+vultrApiFunction+'?api_key='+vultrApiKey, function(res) {
+        switch(res.statusCode) {
+        case 200:
+            res.on('data', function(res) {
+                res = JSON.parse(res);
+                for (var key in res) {
+                    var obj = res[key];
+                    if (obj.label == hostname) {
+                        return cb(null, obj.main_ip);
+                    }
                 }
-            }
-            console.log('no vultr machine has the label ' + hostname);
-        }).on('error', function(e) {
-            log(e);
-        });
-        break;
-        
-    case 400:
-        log('Invalid API location. Check the URL that you are using. (contact developer)');
-        break;
-        
-    case 403:
-        log('Invalid or missing API key. Check that your API key is present and matches your assigned key');
-        break;
-        
-    case 405:
-        log('Invalid HTTP method. Check that the method (POST|GET) matches what the documentation indicates');
-        break;
-        
-    case 412:
-        log('Request failed. Check the response body for a more detailed description');
-        break;
-        
-    case 500:
-        log('Internal server error. Try again at a later time');
-        break;
-        
-    case 503:
-        log('Rate limit hit. API requests are limited to an average of 1/s. Try your request again later.');
-        break;
-    }
-    
-
-     
-
-});
-
+                return cb({message: 'no vultr machine has the label ' + hostname}, null);
+                }).on('error', function(e) {
+                    cb({message: e});
+                });
+            break;
+            
+        case 400:
+            log('vultr_ Invalid API location. Check the URL that you are using. (contact developer)');
+            break;
+            
+        case 403:
+            log('vultr_ Invalid or missing API key. Check that your API key is present and matches your assigned key');
+            break;
+            
+        case 405:
+            log('vultr_ Invalid HTTP method. Check that the method (POST|GET) matches what the documentation indicates');
+            break;
+            
+        case 412:
+            log('vultr_ Request failed. Check the response body for a more detailed description');
+            break;
+            
+        case 500:
+            log('vultr_ Internal server error. Try again at a later time');
+            break;
+            
+        case 503:
+            log('vultr_ Rate limit hit. API requests are limited to an average of 1/s. Try your request again later.');
+            break;
+        }
+    });
+}
