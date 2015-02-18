@@ -68,7 +68,6 @@ https.get(apiEndpoint+apiFunction+'?api_key='+apiKey, function(res) {
         break;
     }
     
-    
 
      
 

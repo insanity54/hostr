@@ -1,0 +1,27 @@
+{
+  "name": "hostr",
+  "version": "0.0.1",
+  "description": "Dynamic hostname interpolation and supplement to /etc/hosts",
+  "main": "hostr",
+  "dependencies": {
+    "nconf": "^0.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/insanity54/hostr"
+  },
+  "keywords": [
+    "/etc/hosts",
+    "dynamic"
+  ],
+  "author": "Chris Grimmett <chris@grimtech.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/insanity54/hostr/issues"
+  },
+  "homepage": "https://github.com/insanity54/hostr"
+}
