@@ -1,5 +1,5 @@
 # hostr
-Dynamic hostname interpolation and supplement to /etc/hosts
+Dynamic hostname lookup and supplement to /etc/hosts
 
 "Oh no, x service is down, I gotta ssh into elrond. What's elrond's IP address again?" 
 
