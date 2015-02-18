@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Using the vultr API, gets your vultr VM's ip address based on the vultr name you assigned
+// Using the vultr and digitalocean APIs, gets your VM's ip address based on the human readable name you assigned.
 
 var nconf = require('nconf');
 var https = require('https');
@@ -42,57 +42,6 @@ if (!hostname) bork('You did not specify a machine name as command line argument
 var vultrRegex = /^vultr_(.*)/;
 var doRegex = /^do_(.*)/;
 
-// does user want a vultr machine addres?
-var vultrResult = vultrRegex.exec(hostname);
-if (vultrResult) {
-    // get rid of the prefix
-    hostname = vultrResult[1];
-    // bork if vultr not configured
-    if (!vultrApiKey) bork('you specified a vultr machine but there is no VULTR_API_KEY configured in config.json');
-    // check vultr for machine name
-    getVultr(function(err, ip) {
-        // bork if there was no vultr machine with this name, or any other error
-        if (err) return bork(err.message);
-        // print the address if the matching machine was found on vultr
-        return printAddress(ip);
-    });
-}
-
-// does the user want a digitalocean machine address?
-var doResult = doRegex.exec(hostname);
-if (doResult) {
-    // get rid of the prefix
-    hostname = doResult[1];
-    // bork if digitalocean not configured
-    if (!doClientId) bork('you specified a digitalocean machine but there is no DO_CLIENT_ID configured in config.json');
-    if (!doApiKey) bork('you specified a digitalocean machine but there is no DO_API_KEY configured in config.json');
-    // check digitalocean for machine name
-    getDo(function(err, ip) {
-        // bork if there was no digitalocean machine with this name, or any other error
-        if (err) return bork(err.message);
-        // print the address if the matching machine was found on do
-        return printAddress(ip);
-    });
-}
-
-// hostname is not prefixed. Try every cloud that the user has configured in config.json
-// is vultr configured?
-if (vultrApiKey) getVultr(function(err, ip) {
-    // log any vultr error but don't bork
-    if (err) log(err.message);
-    // print ip if found matching machine
-    if (ip) return printAddress(ip);
-});
-
-// is digitalocean configured?
-if (doClientId && doApiKey) getDo(function(err, ip) {
-    // log any digitalocean error but don't bork
-    if (err) log(err.message);
-    // print ip if found matching machine
-    if (ip) return printAddress(ip);
-});
-
-
 
 // get hostname
 // if hostname is prefixed
@@ -111,10 +60,96 @@ if (doClientId && doApiKey) getDo(function(err, ip) {
 //                 return
 //             no match
 //                 bork
-//     
 
 
-function getDo(cb) {
+
+
+// control flow
+checkForVultrPrefix(hostname, function(err) {
+    if (err) return bork(err.message);
+    
+    checkForDoPrefix(hostname, function(err) {
+        if (err) return bork(err.message);
+    
+        checkVultr(hostname, function(err) {
+            if (err) log(err.message);
+            
+            checkDo(hostname, function(err) {
+                if (err) log(err.message);
+                
+                bork('no host ' + hostname + ' found.')
+            });
+        });
+    });
+});
+
+
+
+function checkForVultrPrefix(hostname, cb) {
+    // does user want a vultr machine address?
+    var vultrResult = vultrRegex.exec(hostname);
+    if (vultrResult) {
+        // get rid of the prefix
+        hostname = vultrResult[1];
+        // bork if vultr not configured
+        if (!vultrApiKey) bork('you specified a vultr machine but there is no VULTR_API_KEY configured in config.json');
+        // check vultr for machine name
+        getVultr(hostname, function(err, ip) {
+            // callback if there was no vultr machine with this name, or any other error
+            if (err) return cb(err);
+            // print the address if the matching machine was found on vultr
+            return printAddress(ip);
+        });
+    }
+    else {
+        return cb(null);
+    }
+}
+
+function checkForDoPrefix(hostname, cb) {
+    // does the user want a digitalocean machine address?
+    var doResult = doRegex.exec(hostname);
+    if (doResult) {
+        // get rid of the prefix
+        hostname = doResult[1];
+        // bork if digitalocean not configured
+        if (!doClientId) bork('you specified a digitalocean machine but there is no DO_CLIENT_ID configured in config.json');
+        if (!doApiKey) bork('you specified a digitalocean machine but there is no DO_API_KEY configured in config.json');
+        // check digitalocean for machine name
+        getDo(hostname, function(err, ip) {
+            // bork if there was no digitalocean machine with this name, or any other error
+            if (err) return bork(err.message);
+            // print the address if the matching machine was found on do
+            return printAddress(ip);
+        });
+    }
+    else {
+        return cb(null);
+    }
+}
+
+function checkVultr(hostname, cb) {
+    // hostname is not prefixed. Try every cloud that the user has configured in config.json
+    // is vultr configured?
+    if (vultrApiKey) getVultr(hostname, function(err, ip) {
+        // callback with any vultr error
+        if (err) return cb(err.message, null)
+        // print ip if found matching machine
+        if (ip) return printAddress(ip);
+    });
+}
+
+function checkDo(hostname, cb) {
+    // is digitalocean configured?
+    if (doClientId && doApiKey) getDo(hostname, function(err, ip) {
+        // callback with any digitalocean error
+        if (err) return cb(err.message, null);
+        // print ip if found matching machine
+        if (ip) return printAddress(ip);
+    });
+}
+
+function getDo(hostname, cb) {
     //GET https://api.digitalocean.com/v1/droplets/?client_id=[client_id]&api_key=[api_key]
     https.get(doApiEndpoint+doApiFunction+'?client_id='+doClientId+'&api_key='+doApiKey, function(res) {
         switch(res.statusCode) {
@@ -145,7 +180,7 @@ function getDo(cb) {
 
 
 
-function getVultr(cb) {
+function getVultr(hostname, cb) {
     https.get(vultrApiEndpoint+vultrApiFunction+'?api_key='+vultrApiKey, function(res) {
         switch(res.statusCode) {
         case 200:
@@ -159,7 +194,7 @@ function getVultr(cb) {
                 }
                 return cb({message: 'no vultr machine has the label ' + hostname}, null);
                 }).on('error', function(e) {
-                    cb({message: e});
+                    cb({message: e}, null);
                 });
             break;
             

@@ -1,11 +1,13 @@
 # hostr
 Dynamic hostname interpolation and supplement to /etc/hosts
 
+"Oh no, x service is down, I gotta ssh into elrond. What's elrond's IP address again?" 
+
 You have a bunch of machines in the cloud. They come and go so often (livestock, not pets) so you don't bother putting their IPs in /etc/hosts. If only there was a way for your dev machine to automatically know the address to your VMs in the cloud, and connect to them quickly without you needing the IP address. Oh no way, this project does just that? Killer sick, dude.
 
 ## Example usage
 
-    $ ssh core@$(hostr my-vps)
+    $ ssh core@$(hostr elrond)
 
     $ ssh user@$(hostr my-vps2)
     
@@ -15,7 +17,7 @@ or
     
 hostr uses the power of bash* command substitution. You can use hostr anywhere that uses bash*:
 
-    $ echo "my vps named mega-vps is pretty cool and it's IP address is $(hostr mega-vps)"
+    $ echo "hey pete, if you need to log into the vps named mega-vps, it's IP address is $(hostr mega-vps)" > email.txt
 
 
 ## Installation
@@ -24,9 +26,10 @@ hostr uses the power of bash* command substitution. You can use hostr anywhere t
 
   - install node.js
   - clone this repo
+  - npm install
   - set VULTR_API_KEY in [repo root]/config.json
   - create shell alias for hostr
-  - use hostr 
+  - use hostr
   
 ### Detail
 
@@ -79,15 +82,15 @@ I don't know if this project is helpful to anyone other than myself, but if it i
 
 ## Author
 
-I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. If you like this project and feel like supporting me, here's my deets:
+I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. I'm looking for a job where I can do cool projects like this one. If you like this project and feel like supporting me, here's my deets:
 
 http://grimtech.net/ ::: http://twitter.com/insanity54 ::: http://youtube.com/user/insanity54
 
 I'm sticker bombing my van. Send me a sticker to put on my van, then I’ll send you a different sticker!
 
-Chris Grimmett
-PO Box 1517
-Spokane Valley, Washington 99037
+    Chris Grimmett
+    PO Box 1517
+    Spokane Valley, Washington 99037
 
 Amazon wishlist
 http://amzn.com/w/3KN7XHRJ3WHKB
