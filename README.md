@@ -5,6 +5,8 @@ Dynamic hostname lookup and supplement to /etc/hosts
 
 You have a bunch of machines in the cloud. They come and go so often (livestock, not pets) so you don't bother putting their IPs in /etc/hosts. If only there was a way for your dev machine to automatically know the address to your VMs in the cloud, and connect to them quickly without you needing the IP address. Oh no way, this project does just that? Killer sick, dude.
 
+Video intro (runtime 9 minutes) https://www.youtube.com/watch?v=TW5rQE1_55A
+
 ## Example usage
 
     $ ssh core@$(hostr elrond)
@@ -71,6 +73,20 @@ That's it! hostr is ready to use. Try it out!
     $ echo "$(hostr my-vps-name)"
 
 
+## Advanced use
+
+### Cloud prefixes
+
+You can make hostr look at only one cloud provider for the host's address using a prefix. As of v0.0.1, you have the options `do_` for digitalocean, and `vultr_` for vultr.
+
+force hostr to get elrond from digitalocean
+
+    $ ssh user@$(hostr do_elrond)
+    
+force hostr to get elrond from vultr
+
+    $ ssh user@$(hostr vultr_elrond)
+    
 
 ## Troubleshooting
 
@@ -86,7 +102,7 @@ I don't know if this project is helpful to anyone other than myself, but if it i
 
 I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. I'm looking for a job where I can do cool projects like this one. If you like this project and feel like supporting me, here's my deets:
 
-http://grimtech.net/ ::: http://twitter.com/insanity54 ::: http://youtube.com/user/insanity54
+chris@grimtech.net ::: http://grimtech.net/ ::: http://twitter.com/insanity54 ::: http://youtube.com/user/insanity54
 
 I'm sticker bombing my van. Send me a sticker to put on my van, then I’ll send you a different sticker!
 
