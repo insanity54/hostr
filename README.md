@@ -119,4 +119,4 @@ https://zk15r23bg48.ting.com/
 
 ## Foot notes
 
-* also sh, ksh, and whatever the cool kids use these days
+`*` also sh, ksh, and whatever the cool kids use these days
