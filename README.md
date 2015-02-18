@@ -49,7 +49,9 @@ Now we need to satisfy some of hostr's javascript dependencies
 K, now we need to give hostr some information sources. These sources are your VPS/VM hosting services. hostr queries these sources using their api, and finds the IP address of the host you specify using it's human readable lable. Right now, vultr is the only suported source. We tell hostr about our vultr account by editing the hostr config file, `~/scripts/hostr/config.json`
 
     {
-        "VULTR_API_KEY": "enter your vultr api key here"
+        "VULTR_API_KEY": "enter your vultr api key here (get it from https://my.vultr.com/settings/) (optional)".
+        "DO_CLIENT_ID": "enter your digital ocean client id here (get it from https://cloud.digitalocean.com/api_access) (optional)",
+        "DO_API_KEY": "enter your digital ocean api key here (get it from https://cloud.digitalocean.com/api_access) (optional)"
     }
   
 Gr8, now we need to make the hostr command available to bash*. We do this by adding an alias to the end of our ~/.bash_aliases file. For other shell aliases, check their docs. Our ~/.bash_aliases file needs this line:
