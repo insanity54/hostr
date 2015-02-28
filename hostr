@@ -9,7 +9,7 @@ var path = require('path');
 
 
 
-nconf.file('./config.json');
+nconf.file(path.join(__dirname, 'config.json'));
 
 function bork(err) {
     throw new Error(err);
