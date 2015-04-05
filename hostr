@@ -188,15 +188,10 @@ function getVultr(hostname, cb) {
 
             res.on('data', function(p) {
                 pak.push(p);
-                //console.log('got data');
             });
             
             res.on('end', function() {
-                //console.log('request closed');
-                //console.log(pak);
                 pak.join('');
-                //console.log(pak);
-                //console.log(res);
                 pak = JSON.parse(pak);
                 for (var key in pak) {
                     var obj = pak[key];
