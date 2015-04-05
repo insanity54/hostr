@@ -181,21 +181,36 @@ function getDo(hostname, cb) {
 
 
 function getVultr(hostname, cb) {
+    var pak = [];
     https.get(vultrApiEndpoint+vultrApiFunction+'?api_key='+vultrApiKey, function(res) {
         switch(res.statusCode) {
         case 200:
-            res.on('data', function(res) {
-                res = JSON.parse(res);
-                for (var key in res) {
-                    var obj = res[key];
+
+            res.on('data', function(p) {
+                pak.push(p);
+                //console.log('got data');
+            });
+            
+            res.on('end', function() {
+                //console.log('request closed');
+                //console.log(pak);
+                pak.join('');
+                //console.log(pak);
+                //console.log(res);
+                pak = JSON.parse(pak);
+                for (var key in pak) {
+                    var obj = pak[key];
                     if (obj.label == hostname) {
                         return cb(null, obj.main_ip);
                     }
                 }
                 return cb({message: 'no vultr machine has the label ' + hostname}, null);
-                }).on('error', function(e) {
-                    cb({message: e}, null);
-                });
+            });
+            
+            res.on('error', function(e) {
+                //console.log('err');
+                cb({message: e}, null);
+            });
             break;
             
         case 400:
