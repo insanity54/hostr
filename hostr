@@ -150,21 +150,31 @@ function checkDo(hostname, cb) {
 }
 
 function getDo(hostname, cb) {
+    var pak = [];
     //GET https://api.digitalocean.com/v1/droplets/?client_id=[client_id]&api_key=[api_key]
     https.get(doApiEndpoint+doApiFunction+'?client_id='+doClientId+'&api_key='+doApiKey, function(res) {
         switch(res.statusCode) {
             case 200: 
-                res.on('data', function(res) {
-                res = JSON.parse(res);
-                for (var key in res.droplets) {
-                    var droplet = res.droplets[key];
-                    if (droplet.name == hostname) {
-                        return cb(null, droplet.ip_address);
+                
+                res.on('data', function(p) {
+                    pak.push(p);
+                });
+                
+                res.on('end', function() {
+                    pak.join('');
+                    pak = JSON.parse(pak);
+                    for (var key in pak) {
+                        var obj = pak[key];
+                        if (obj.label == hostname) {
+                            return cb(null, obj.main_ip);
+                        }
                     }
-                }
-                return cb({message: 'no digitalocean machine has the label, ' + hostname}, null);
-                }).on('error', function(e) {
-                    return cb({message: e}, null);
+                    return cb({message: 'no vultr machine has the label ' + hostname}, null);
+                });
+                
+                res.on('error', function(e) {
+                    //console.log('err');
+                    cb({message: e}, null);
                 });
             break;
             
