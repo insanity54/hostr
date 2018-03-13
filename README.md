@@ -100,42 +100,11 @@ I don't know if this project is helpful to anyone other than myself, but if it i
 
 ## Author
 
-I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. I'm looking for a job where I can do cool projects like this one. If you like this project and feel like supporting me, here's my deets:
+I'm Chris Grimmett. I do videos on youtube, develop software, and wish I were a cyborg. For more info about me, check my website https://grimtech.net/about
 
-chris@grimtech.net ::: http://grimtech.net/ ::: http://twitter.com/insanity54 ::: http://youtube.com/user/insanity54
+If you have used and enjoy this code base, I'd love to hear from you!
 
-I'm sticker bombing my van. Send me a sticker to put on my van, then I’ll send you a different sticker!
-
-    Chris Grimmett
-    PO Box 1517
-    Spokane Valley, Washington 99037
-
-Amazon wishlist
-http://amzn.com/w/3KN7XHRJ3WHKB
-
-Changetip
-http://insanity54.tip.me/
-
-Bitcoin
-[1JSG6YdLGVq6nY6Q3vpVxVxZ3aAE7oJK1U](bitcoin:1JSG6YdLGVq6nY6Q3vpVxVxZ3aAE7oJK1U)
-
-
-Stuff I use that you might enjoy:
-
-Vultr.com
-http://www.vultr.com/?ref=6822161
-
-Digital Ocean
-https://www.digitalocean.com/?refcode=4d9ece557e9e
-
-League of Legends
-http://signup.leagueoflegends.com/?ref=53656770aa37b406820010
-
-dropbox
-http://db.tt/dtPRnM1p
-
-Ting
-https://zk15r23bg48.ting.com/
+[![Say Thanks!](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/insanity54)
 
 
 ## Foot notes
