@@ -4,7 +4,7 @@
   "description": "Dynamic hostname interpolation and supplement to /etc/hosts",
   "main": "hostr",
   "dependencies": {
-    "nconf": "^0.7.1"
+    "nconf": "^0.10.0"
   },
   "devDependencies": {},
   "scripts": {
